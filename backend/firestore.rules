@@ -1,0 +1,68 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function getUserData() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+    
+    function belongsToCompany(companyId) {
+      return isAuthenticated() && getUserData().companyId == companyId;
+    }
+    
+    function hasRole(role) {
+      return isAuthenticated() && getUserData().role == role;
+    }
+    
+    function isManager() {
+      return hasRole('manager') || hasRole('admin');
+    }
+    
+    function isAdmin() {
+      return hasRole('admin');
+    }
+    
+    // Company rules
+    match /companies/{companyId} {
+      allow read: if belongsToCompany(companyId);
+      allow create: if isAuthenticated() && request.auth.uid == request.resource.data.createdBy;
+      allow update: if isAdmin() && belongsToCompany(companyId);
+    }
+    
+    // User rules
+    match /users/{userId} {
+      allow read: if isAuthenticated() && 
+        (request.auth.uid == userId || 
+         (belongsToCompany(resource.data.companyId) && isManager()));
+      allow create: if isAuthenticated() && isAdmin();
+      allow update: if isAuthenticated() && 
+        (request.auth.uid == userId || 
+         (belongsToCompany(resource.data.companyId) && isAdmin()));
+    }
+    
+    // Claims rules
+    match /claims/{claimId} {
+      allow read: if isAuthenticated() && 
+        (resource.data.userId == request.auth.uid ||
+         (belongsToCompany(resource.data.companyId) && isManager()));
+      allow create: if isAuthenticated() && 
+        request.auth.uid == request.resource.data.userId &&
+        belongsToCompany(request.resource.data.companyId);
+      allow update: if isAuthenticated() && 
+        ((resource.data.userId == request.auth.uid && resource.data.status == 'draft') ||
+         (belongsToCompany(resource.data.companyId) && isManager()));
+    }
+    
+    // Receipts rules
+    match /receipts/{receiptId} {
+      allow read: if isAuthenticated() && 
+        belongsToCompany(get(/databases/$(database)/documents/claims/$(resource.data.claimId)).data.companyId);
+      allow create: if isAuthenticated();
+      allow update: if false; // Receipts should be immutable
+    }
+  }
+} 

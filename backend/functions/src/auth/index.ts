@@ -1,5 +1,4 @@
 import * as functions from 'firebase-functions';
-import * as admin from 'firebase-admin';
 
 // Auth functions will be implemented here
 export const registerCompany = functions.https.onCall(async (data, context) => {

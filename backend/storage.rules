@@ -1,0 +1,18 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Helper function to check if user belongs to company
+    function belongsToCompany(companyId) {
+      return request.auth != null && 
+        firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.companyId == companyId;
+    }
+    
+    // Receipt images: /receipts/{companyId}/{claimId}/{filename}
+    match /receipts/{companyId}/{claimId}/{filename} {
+      allow read: if belongsToCompany(companyId);
+      allow write: if belongsToCompany(companyId) && 
+        request.resource.size < 10 * 1024 * 1024 && // Max 10MB
+        request.resource.contentType.matches('image/.*');
+    }
+  }
+} 

@@ -56,6 +56,8 @@ firebase-debug.*.log*
 .firebase/
 .firebaserc
 firebase-export-*
+serviceAccountKey.json
+**/serviceAccountKey.json
 
 # OS files
 .DS_Store
