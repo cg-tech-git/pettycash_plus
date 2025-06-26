@@ -22,36 +22,37 @@
 - ✓ Security rules deployed
 - ✓ Indexes configured
 
-### 4. Service Account
+### 4. Cloud Storage
+- ✓ Default bucket created: `pettycash-plus.firebasestorage.app`
+- ✓ Located in `europe-west2` region
+- ✓ Security rules deployed
+
+### 5. Service Account
 - ✓ Created: `pettycash-plus-dev@pettycash-plus.iam.gserviceaccount.com`
 - ✓ Roles assigned: Firebase Admin, AI Platform User
 - ✓ Key downloaded: `functions/serviceAccountKey.json`
 
-### 5. Local Development
+### 6. Local Development
 - ✓ Dependencies installed
 - ✓ TypeScript compiling successfully
 - ✓ Environment file created
 - ✓ Firebase emulator working
 
-### 6. Functions Deployed
+### 7. Functions Deployed
 - ✓ Health endpoint: `http://localhost:5001/pettycash-plus/us-central1/health`
 - ✓ registerCompany (placeholder)
 - ✓ registerUser (placeholder)
 
 ## 🔧 Manual Steps Still Required
 
-### 1. Firebase Storage
-- Go to [Firebase Console > Storage](https://console.firebase.google.com/project/pettycash-plus/storage)
-- Click "Get Started"
-- Choose `europe-west2` location
-- The rules are already deployed
-
-### 2. Firebase Authentication
+### 1. Firebase Authentication (2 minutes)
+Unfortunately, Firebase Auth must be initialized through the console first:
 - Go to [Firebase Console > Authentication](https://console.firebase.google.com/project/pettycash-plus/authentication)
 - Click "Get Started"
 - Enable "Email/Password" provider
+- Click "Save"
 
-### 3. Get Gemini API Key
+### 2. Get Gemini API Key (1 minute)
 - Go to [Google AI Studio](https://makersuite.google.com/app/apikey)
 - Create new API key
 - Update in `backend/functions/.env`
@@ -77,9 +78,14 @@ curl http://localhost:5001/pettycash-plus/us-central1/health
 
 ## Next Development Steps
 
-1. Implement company registration logic
-2. Create user authentication flow
-3. Build claim management endpoints
-4. Add AI integrations
+1. Complete Authentication setup in console
+2. Get Gemini API key
+3. Implement company registration logic
+4. Create user authentication flow
+5. Build claim management endpoints
+6. Add AI integrations
 
-Everything is ready for development! 
+## Recent Progress
+- ✅ Storage bucket created programmatically
+- ✅ Storage rules deployed successfully
+- ⚠️ Authentication requires console initialization first 
